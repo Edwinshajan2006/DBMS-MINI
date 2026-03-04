@@ -1,0 +1,42 @@
+create table organisers(
+    organiser_id varchar(50) primary key,
+    organiser_name varchar(50) not null,
+    contact_email varchar(100) not null,
+    phone varchar(20)
+);
+
+create table participants(
+    participant_id int primary key,
+    participant_name varchar(50) not null,
+    email varchar(100) not null,
+    phone varchar(20)
+);
+
+create table events(
+    event_id int primary key,
+    event_name varchar(50) not null,
+    event_date date not null,
+    location varchar(100) not null,
+    organiser_id varchar(50) not null,
+    foreign key (organiser_id) references organisers(organiser_id)
+);
+
+create table tickets(
+    ticket_id int primary key,
+    event_id int,
+    participant_id int,
+    ticket_type varchar(20) not null,
+    price decimal(10, 2) not null,
+    foreign key (event_id) references events(event_id),
+    foreign key (participant_id) references participants(participant_id)
+);
+
+create table payments(
+    payment_id int primary key,
+    ticket_id int,
+    payment_date date not null,
+    amount decimal(10, 2) not null,
+    payment_method varchar(20) not null,
+    foreign key (ticket_id) references tickets(ticket_id)
+);
+
