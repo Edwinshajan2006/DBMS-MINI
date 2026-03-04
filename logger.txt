@@ -46,3 +46,58 @@ create table payments(
     foreign key (ticket_id) references tickets(ticket_id)
 );
 
+
+
+mysql> \. tablecreation.sql
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| organiser_id   | varchar(50)  | NO   | PRI | NULL    |       |
+| organiser_name | varchar(50)  | NO   |     | NULL    |       |
+| contact_email  | varchar(100) | NO   |     | NULL    |       |
+| phone          | varchar(20)  | YES  |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+4 rows in set (0.04 sec)
+
++------------------+--------------+------+-----+---------+-------+
+| Field            | Type         | Null | Key | Default | Extra |
++------------------+--------------+------+-----+---------+-------+
+| participant_id   | int          | NO   | PRI | NULL    |       |
+| participant_name | varchar(50)  | NO   |     | NULL    |       |
+| email            | varchar(100) | NO   |     | NULL    |       |
+| phone            | varchar(20)  | YES  |     | NULL    |       |
++------------------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| event_id     | int          | NO   | PRI | NULL    |       |
+| event_name   | varchar(50)  | NO   |     | NULL    |       |
+| event_date   | date         | NO   |     | NULL    |       |
+| location     | varchar(100) | NO   |     | NULL    |       |
+| organiser_id | varchar(50)  | NO   | MUL | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| ticket_id      | int           | NO   | PRI | NULL    |       |
+| event_id       | int           | YES  | MUL | NULL    |       |
+| participant_id | int           | YES  | MUL | NULL    |       |
+| ticket_type    | varchar(20)   | NO   |     | NULL    |       |
+| price          | decimal(10,2) | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| payment_id     | int           | NO   | PRI | NULL    |       |
+| ticket_id      | int           | YES  | MUL | NULL    |       |
+| payment_date   | date          | NO   |     | NULL    |       |
+| amount         | decimal(10,2) | NO   |     | NULL    |       |
+| payment_method | varchar(20)   | NO   |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
