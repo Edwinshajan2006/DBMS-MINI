@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventHub | Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* ── Layout ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: rgba(255, 255, 255, 0.03);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 8px;
+            margin-bottom: 36px;
+        }
+
+        .sidebar-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6c3bff, #1e8fff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(108, 59, 255, 0.35);
+        }
+
+        .sidebar-logo span {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .sidebar-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.28);
+            padding: 0 10px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(108, 59, 255, 0.25), rgba(30, 143, 255, 0.15));
+            color: #fff;
+            border: 1px solid rgba(108, 59, 255, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .sidebar-footer a:hover {
+            background: rgba(255, 59, 92, 0.1);
+            color: #ff6b8a;
+            text-decoration: none;
+        }
+
+        /* ── Main Content ── */
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 36px;
+            max-width: 100%;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .topbar h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .topbar p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 3px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #6c3bff, #1e8fff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        /* ── Stat Cards ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-top: 4px;
+        }
+
+        /* ── Section / Tab Content ── */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .table-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-card .table-wrap {
+            border-radius: 0;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .icon-btn-edit {
+            background: rgba(30, 143, 255, 0.15);
+            color: #6ab4ff;
+        }
+
+        .icon-btn-edit:hover {
+            background: rgba(30, 143, 255, 0.3);
+        }
+
+        .icon-btn-delete {
+            background: rgba(255, 59, 92, 0.12);
+            color: #ff7b95;
+        }
+
+        .icon-btn-delete:hover {
+            background: rgba(255, 59, 92, 0.25);
+        }
+
+        /* ── Form grid ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 20px;
+        }
+
+        .form-grid .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-state .es-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🎪</div>
+                <span>EventHub</span>
+            </div>
+
+            <div class="sidebar-section-label">Management</div>
+            <div class="nav-item active" data-section="overview" onclick="showSection('overview',this)">
+                <span class="nav-icon">📊</span> Overview
+            </div>
+            <div class="nav-item" data-section="organisers" onclick="showSection('organisers',this)">
+                <span class="nav-icon">🏢</span> Organisers
+            </div>
+            <div class="nav-item" data-section="participants" onclick="showSection('participants',this)">
+                <span class="nav-icon">👥</span> Participants
+            </div>
+            <div class="nav-item" data-section="events" onclick="showSection('events',this)">
+                <span class="nav-icon">🗓️</span> Events
+            </div>
+            <div class="nav-item" data-section="tickets" onclick="showSection('tickets',this)">
+                <span class="nav-icon">🎫</span> Tickets
+            </div>
+            <div class="nav-item" data-section="payments" onclick="showSection('payments',this)">
+                <span class="nav-icon">💳</span> Payments
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="index.html">⬅ &nbsp;Sign Out</a>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+
+            <!-- Topbar -->
+            <div class="topbar">
+                <div>
+                    <h1 id="sectionTitle">Overview</h1>
+                    <p id="sectionSubtitle">Welcome back, Admin</p>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-avatar">A</div>
+                </div>
+            </div>
+
+            <!-- ═══ OVERVIEW ═══ -->
+            <section id="overview" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏢</div>
+                        <div class="stat-value" id="stat-organisers">0</div>
+                        <div class="stat-label">Organisers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="stat-participants">0</div>
+                        <div class="stat-label">Participants</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🗓️</div>
+                        <div class="stat-value" id="stat-events">0</div>
+                        <div class="stat-label">Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎫</div>
+                        <div class="stat-value" id="stat-tickets">0</div>
+                        <div class="stat-label">Tickets Sold</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="stat-revenue">₹0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                </div>
+
+                <!-- Recent Events -->
+                <div class="section-header">
+                    <h2>Recent Events</h2>
+                </div>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table id="overviewTable">
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Date</th>
+                                    <th>Location</th>
+                                    <th>Organiser</th>
+                                    <th>Tickets</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overviewBody">
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <div class="es-icon">🗓️</div>
+                                            <p>No events yet — add one in the Events tab</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ ORGANISERS ═══ -->
+            <section id="organisers" class="section">
+                <div class="section-header">
+                    <h2>Organisers</h2>
+                    <button class="btn btn-primary" onclick="openModal('organiserModal')">+ Add Organiser</button>
+                </div>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="organiserBody">
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <div class="es-icon">🏢</div>
+                                            <p>No organisers added yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ PARTICIPANTS ═══ -->
+            <section id="participants" class="section">
+                <div class="section-header">
+                    <h2>Participants</h2>
+                    <button class="btn btn-primary" onclick="openModal('participantModal')">+ Add Participant</button>
+                </div>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="participantBody">
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <div class="es-icon">👥</div>
+                                            <p>No participants added yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ EVENTS ═══ -->
+            <section id="events" class="section">
+                <div class="section-header">
+                    <h2>Events</h2>
+                    <button class="btn btn-primary" onclick="openModal('eventModal')">+ Add Event</button>
+                </div>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Location</th>
+                                    <th>Organiser</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventBody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="es-icon">🗓️</div>
+                                            <p>No events added yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ TICKETS ═══ -->
+            <section id="tickets" class="section">
+                <div class="section-header">
+                    <h2>Tickets</h2>
+                    <button class="btn btn-primary" onclick="openModal('ticketModal')">+ Sell Ticket</button>
+                </div>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Event</th>
+                                    <th>Participant</th>
+                                    <th>Type</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketBody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="es-icon">🎫</div>
+                                            <p>No tickets sold yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ PAYMENTS ═══ -->
+            <section id="payments" class="section">
+                <div class="section-header">
+                    <h2>Payments</h2>
+                    <button class="btn btn-primary" onclick="openModal('paymentModal')">+ Record Payment</button>
+                </div>
+                <div class="table-card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Ticket ID</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentBody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="es-icon">💳</div>
+                                            <p>No payments recorded yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ════════════ MODALS ════════════ -->
+
+    <!-- Organiser Modal -->
+    <div class="modal-backdrop" id="organiserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🏢 Add Organiser</h2>
+                <button class="modal-close" onclick="closeModal('organiserModal')">✕</button>
+            </div>
+            <form id="organiserForm" onsubmit="addOrganiser(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Organiser ID *</label>
+                        <input type="text" id="o_id" placeholder="e.g. ORG001" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Organiser Name *</label>
+                        <input type="text" id="o_name" placeholder="Full name / org name" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Email *</label>
+                        <input type="email" id="o_email" placeholder="email@example.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="o_phone" placeholder="+91 00000 00000" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('organiserModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Organiser</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Participant Modal -->
+    <div class="modal-backdrop" id="participantModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>👥 Add Participant</h2>
+                <button class="modal-close" onclick="closeModal('participantModal')">✕</button>
+            </div>
+            <form id="participantForm" onsubmit="addParticipant(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Participant ID *</label>
+                        <input type="number" id="p_id" placeholder="e.g. 101" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Participant Name *</label>
+                        <input type="text" id="p_name" placeholder="Full name" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="p_email" placeholder="email@example.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="p_phone" placeholder="+91 00000 00000" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('participantModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Participant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal-backdrop" id="eventModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🗓️ Add Event</h2>
+                <button class="modal-close" onclick="closeModal('eventModal')">✕</button>
+            </div>
+            <form id="eventForm" onsubmit="addEvent(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Event ID *</label>
+                        <input type="number" id="e_id" placeholder="e.g. 1" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Event Name *</label>
+                        <input type="text" id="e_name" placeholder="Event name" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Event Date *</label>
+                        <input type="date" id="e_date" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <input type="text" id="e_location" placeholder="Venue / City" required />
+                    </div>
+                    <div class="form-group full">
+                        <label>Organiser *</label>
+                        <select id="e_organiser" required>
+                            <option value="" disabled selected>Select organiser…</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('eventModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div class="modal-backdrop" id="ticketModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🎫 Sell Ticket</h2>
+                <button class="modal-close" onclick="closeModal('ticketModal')">✕</button>
+            </div>
+            <form id="ticketForm" onsubmit="addTicket(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Ticket ID *</label>
+                        <input type="number" id="t_id" placeholder="e.g. 1001" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Ticket Type *</label>
+                        <select id="t_type" required>
+                            <option value="" disabled selected>Select type…</option>
+                            <option value="VIP">VIP</option>
+                            <option value="General">General</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Event *</label>
+                        <select id="t_event" required>
+                            <option value="" disabled selected>Select event…</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Participant *</label>
+                        <select id="t_participant" required>
+                            <option value="" disabled selected>Select participant…</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Price (₹) *</label>
+                        <input type="number" id="t_price" placeholder="e.g. 999" step="0.01" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('ticketModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Issue Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-backdrop" id="paymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>💳 Record Payment</h2>
+                <button class="modal-close" onclick="closeModal('paymentModal')">✕</button>
+            </div>
+            <form id="paymentForm" onsubmit="addPayment(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Payment ID *</label>
+                        <input type="number" id="py_id" placeholder="e.g. 5001" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Ticket *</label>
+                        <select id="py_ticket" required>
+                            <option value="" disabled selected>Select ticket…</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Date *</label>
+                        <input type="date" id="py_date" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (₹) *</label>
+                        <input type="number" id="py_amount" placeholder="e.g. 999" step="0.01" required />
+                    </div>
+                    <div class="form-group full">
+                        <label>Payment Method *</label>
+                        <select id="py_method" required>
+                            <option value="" disabled selected>Select method…</option>
+                            <option value="Online">Online (UPI/Card)</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('paymentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        /* ── Data Store ── */
+        let db = {
+            organisers: [],
+            participants: [],
+            events: [],
+            tickets: [],
+            payments: []
+        };
+
+        /* ── Load/Save from localStorage ── */
+        function save() { localStorage.setItem('eventhub_db', JSON.stringify(db)); }
+        function load() {
+            const s = localStorage.getItem('eventhub_db');
+            if (s) {
+                try { db = JSON.parse(s); } catch (e) { }
+            }
+            renderAll();
+        }
+
+        /* ── Section navigation ── */
+        const titles = {
+            overview: 'Overview', organisers: 'Organisers', participants: 'Participants',
+            events: 'Events', tickets: 'Tickets', payments: 'Payments'
+        };
+        const subs = {
+            overview: 'Welcome back, Admin',
+            organisers: 'Manage event organisers',
+            participants: 'Manage registered participants',
+            events: 'Manage upcoming and past events',
+            tickets: 'Manage ticket sales',
+            payments: 'Track all payment transactions'
+        };
+        function showSection(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+            document.getElementById('sectionTitle').textContent = titles[id];
+            document.getElementById('sectionSubtitle').textContent = subs[id];
+        }
+
+        /* ── Modal helpers ── */
+        function openModal(id) {
+            populateSelects();
+            document.getElementById(id).classList.add('open');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            document.getElementById(id).querySelector('form').reset();
+        }
+        // Close on backdrop click
+        document.querySelectorAll('.modal-backdrop').forEach(bd => {
+            bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+        });
+
+        /* ── Toast ── */
+        function toast(msg, type = 'success') {
+            const t = document.createElement('div');
+            t.className = `toast toast-${type}`;
+            t.innerHTML = (type === 'success' ? '✅' : '❌') + ' ' + msg;
+            document.getElementById('toastContainer').appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        /* ── Populate select dropdowns ── */
+        function populateSelects() {
+            // Organiser select (for events)
+            const eOrg = document.getElementById('e_organiser');
+            eOrg.innerHTML = '<option value="" disabled selected>Select organiser…</option>';
+            db.organisers.forEach(o => {
+                eOrg.innerHTML += `<option value="${o.id}">${o.name} (${o.id})</option>`;
+            });
+
+            // Event select (for tickets)
+            const tEv = document.getElementById('t_event');
+            tEv.innerHTML = '<option value="" disabled selected>Select event…</option>';
+            db.events.forEach(e => {
+                tEv.innerHTML += `<option value="${e.id}">${e.name} (ID:${e.id})</option>`;
+            });
+
+            // Participant select (for tickets)
+            const tPart = document.getElementById('t_participant');
+            tPart.innerHTML = '<option value="" disabled selected>Select participant…</option>';
+            db.participants.forEach(p => {
+                tPart.innerHTML += `<option value="${p.id}">${p.name} (ID:${p.id})</option>`;
+            });
+
+            // Ticket select (for payments)
+            const pyTk = document.getElementById('py_ticket');
+            pyTk.innerHTML = '<option value="" disabled selected>Select ticket…</option>';
+            db.tickets.forEach(t => {
+                const ev = db.events.find(e => e.id == t.event_id);
+                pyTk.innerHTML += `<option value="${t.id}">Ticket #${t.id} — ${ev ? ev.name : 'Unknown Event'}</option>`;
+            });
+        }
+
+        /* ══════════════════════════
+           ADD FUNCTIONS
+        ══════════════════════════ */
+
+        function addOrganiser(ev) {
+            ev.preventDefault();
+            const id = document.getElementById('o_id').value.trim();
+            const name = document.getElementById('o_name').value.trim();
+            const email = document.getElementById('o_email').value.trim();
+            const phone = document.getElementById('o_phone').value.trim();
+
+            if (db.organisers.find(o => o.id === id)) {
+                toast('Organiser ID already exists!', 'error'); return;
+            }
+            db.organisers.push({ id, name, email, phone });
+            save(); renderOrganisers(); updateStats();
+            closeModal('organiserModal');
+            toast('Organiser added successfully!');
+        }
+
+        function addParticipant(ev) {
+            ev.preventDefault();
+            const id = parseInt(document.getElementById('p_id').value);
+            const name = document.getElementById('p_name').value.trim();
+            const email = document.getElementById('p_email').value.trim();
+            const phone = document.getElementById('p_phone').value.trim();
+
+            if (db.participants.find(p => p.id === id)) {
+                toast('Participant ID already exists!', 'error'); return;
+            }
+            db.participants.push({ id, name, email, phone });
+            save(); renderParticipants(); updateStats();
+            closeModal('participantModal');
+            toast('Participant added successfully!');
+        }
+
+        function addEvent(ev) {
+            ev.preventDefault();
+            const id = parseInt(document.getElementById('e_id').value);
+            const name = document.getElementById('e_name').value.trim();
+            const date = document.getElementById('e_date').value;
+            const location = document.getElementById('e_location').value.trim();
+            const org_id = document.getElementById('e_organiser').value;
+
+            if (db.events.find(e => e.id === id)) {
+                toast('Event ID already exists!', 'error'); return;
+            }
+            db.events.push({ id, name, date, location, org_id });
+            save(); renderEvents(); renderOverview(); updateStats();
+            closeModal('eventModal');
+            toast('Event added successfully!');
+        }
+
+        function addTicket(ev) {
+            ev.preventDefault();
+            const id = parseInt(document.getElementById('t_id').value);
+            const event_id = parseInt(document.getElementById('t_event').value);
+            const participant_id = parseInt(document.getElementById('t_participant').value);
+            const type = document.getElementById('t_type').value;
+            const price = parseFloat(document.getElementById('t_price').value);
+
+            if (db.tickets.find(t => t.id === id)) {
+                toast('Ticket ID already exists!', 'error'); return;
+            }
+            db.tickets.push({ id, event_id, participant_id, type, price });
+            save(); renderTickets(); updateStats();
+            closeModal('ticketModal');
+            toast('Ticket issued successfully!');
+        }
+
+        function addPayment(ev) {
+            ev.preventDefault();
+            const id = parseInt(document.getElementById('py_id').value);
+            const tick_id = parseInt(document.getElementById('py_ticket').value);
+            const date = document.getElementById('py_date').value;
+            const amount = parseFloat(document.getElementById('py_amount').value);
+            const method = document.getElementById('py_method').value;
+
+            if (db.payments.find(p => p.id === id)) {
+                toast('Payment ID already exists!', 'error'); return;
+            }
+            db.payments.push({ id, tick_id, date, amount, method });
+            save(); renderPayments(); updateStats();
+            closeModal('paymentModal');
+            toast('Payment recorded successfully!');
+        }
+
+        /* ══════════════════════════
+           DELETE FUNCTIONS
+        ══════════════════════════ */
+        function deleteOrganiser(id) {
+            db.organisers = db.organisers.filter(o => o.id !== id);
+            save(); renderOrganisers(); updateStats();
+            toast('Organiser removed.');
+        }
+        function deleteParticipant(id) {
+            db.participants = db.participants.filter(p => p.id !== id);
+            save(); renderParticipants(); updateStats();
+            toast('Participant removed.');
+        }
+        function deleteEvent(id) {
+            db.events = db.events.filter(e => e.id !== id);
+            save(); renderEvents(); renderOverview(); updateStats();
+            toast('Event removed.');
+        }
+        function deleteTicket(id) {
+            db.tickets = db.tickets.filter(t => t.id !== id);
+            save(); renderTickets(); updateStats();
+            toast('Ticket removed.');
+        }
+        function deletePayment(id) {
+            db.payments = db.payments.filter(p => p.id !== id);
+            save(); renderPayments(); updateStats();
+            toast('Payment removed.');
+        }
+
+        /* ══════════════════════════
+           RENDER FUNCTIONS
+        ══════════════════════════ */
+        function emptyRow(cols, icon, msg) {
+            return `<tr><td colspan="${cols}"><div class="empty-state"><div class="es-icon">${icon}</div><p>${msg}</p></div></td></tr>`;
+        }
+
+        function renderOrganisers() {
+            const tbody = document.getElementById('organiserBody');
+            if (!db.organisers.length) {
+                tbody.innerHTML = emptyRow(5, '🏢', 'No organisers added yet'); return;
+            }
+            tbody.innerHTML = db.organisers.map(o => `
+    <tr>
+      <td><code style="color:#a78bff">${o.id}</code></td>
+      <td><strong>${o.name}</strong></td>
+      <td>${o.email}</td>
+      <td>${o.phone || '—'}</td>
+      <td><div class="table-actions">
+        <button class="icon-btn icon-btn-delete" onclick="deleteOrganiser('${o.id}')" title="Delete">🗑</button>
+      </div></td>
+    </tr>`).join('');
+        }
+
+        function renderParticipants() {
+            const tbody = document.getElementById('participantBody');
+            if (!db.participants.length) {
+                tbody.innerHTML = emptyRow(5, '👥', 'No participants added yet'); return;
+            }
+            tbody.innerHTML = db.participants.map(p => `
+    <tr>
+      <td><code style="color:#a78bff">${p.id}</code></td>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.email}</td>
+      <td>${p.phone || '—'}</td>
+      <td><div class="table-actions">
+        <button class="icon-btn icon-btn-delete" onclick="deleteParticipant(${p.id})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`).join('');
+        }
+
+        function renderEvents() {
+            const tbody = document.getElementById('eventBody');
+            if (!db.events.length) {
+                tbody.innerHTML = emptyRow(6, '🗓️', 'No events added yet'); return;
+            }
+            tbody.innerHTML = db.events.map(e => {
+                const org = db.organisers.find(o => o.id === e.org_id);
+                const d = new Date(e.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                return `<tr>
+      <td><code style="color:#a78bff">${e.id}</code></td>
+      <td><strong>${e.name}</strong></td>
+      <td>${d}</td>
+      <td>📍 ${e.location}</td>
+      <td>${org ? org.name : '<span style="color:#ff7b95">Unknown</span>'}</td>
+      <td><div class="table-actions">
+        <button class="icon-btn icon-btn-delete" onclick="deleteEvent(${e.id})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+            }).join('');
+        }
+
+        function renderTickets() {
+            const tbody = document.getElementById('ticketBody');
+            if (!db.tickets.length) {
+                tbody.innerHTML = emptyRow(6, '🎫', 'No tickets sold yet'); return;
+            }
+            const badgeClass = { VIP: 'badge-vip', General: 'badge-gen', Student: 'badge-stud' };
+            tbody.innerHTML = db.tickets.map(t => {
+                const ev = db.events.find(e => e.id === t.event_id);
+                const part = db.participants.find(p => p.id === t.participant_id);
+                return `<tr>
+      <td><code style="color:#a78bff">#${t.id}</code></td>
+      <td>${ev ? ev.name : '—'}</td>
+      <td>${part ? part.name : '—'}</td>
+      <td><span class="badge ${badgeClass[t.type] || 'badge-gen'}">${t.type}</span></td>
+      <td>₹${parseFloat(t.price).toFixed(2)}</td>
+      <td><div class="table-actions">
+        <button class="icon-btn icon-btn-delete" onclick="deleteTicket(${t.id})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+            }).join('');
+        }
+
+        function renderPayments() {
+            const tbody = document.getElementById('paymentBody');
+            if (!db.payments.length) {
+                tbody.innerHTML = emptyRow(6, '💳', 'No payments recorded yet'); return;
+            }
+            const mBadge = { Online: 'badge-online', Cash: 'badge-cash', Cheque: 'badge-gen' };
+            tbody.innerHTML = db.payments.map(p => {
+                const d = new Date(p.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                return `<tr>
+      <td><code style="color:#a78bff">#${p.id}</code></td>
+      <td>#${p.tick_id}</td>
+      <td>${d}</td>
+      <td><strong>₹${parseFloat(p.amount).toFixed(2)}</strong></td>
+      <td><span class="badge ${mBadge[p.method] || 'badge-gen'}">${p.method}</span></td>
+      <td><div class="table-actions">
+        <button class="icon-btn icon-btn-delete" onclick="deletePayment(${p.id})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+            }).join('');
+        }
+
+        function renderOverview() {
+            const tbody = document.getElementById('overviewBody');
+            if (!db.events.length) {
+                tbody.innerHTML = emptyRow(5, '🗓️', 'No events yet — add one in the Events tab'); return;
+            }
+            const recent = [...db.events].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            tbody.innerHTML = recent.map(e => {
+                const org = db.organisers.find(o => o.id === e.org_id);
+                const tickets = db.tickets.filter(t => t.event_id === e.id).length;
+                const d = new Date(e.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                return `<tr>
+      <td><strong>${e.name}</strong></td>
+      <td>${d}</td>
+      <td>📍 ${e.location}</td>
+      <td>${org ? org.name : '—'}</td>
+      <td><span class="badge badge-gen">${tickets} sold</span></td>
+    </tr>`;
+            }).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('stat-organisers').textContent = db.organisers.length;
+            document.getElementById('stat-participants').textContent = db.participants.length;
+            document.getElementById('stat-events').textContent = db.events.length;
+            document.getElementById('stat-tickets').textContent = db.tickets.length;
+            const revenue = db.payments.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+            document.getElementById('stat-revenue').textContent = '₹' + revenue.toLocaleString('en-IN');
+        }
+
+        function renderAll() {
+            renderOrganisers();
+            renderParticipants();
+            renderEvents();
+            renderTickets();
+            renderPayments();
+            renderOverview();
+            updateStats();
+        }
+
+        /* ── Init ── */
+        load();
+    </script>
+</body>
+
+</html>
